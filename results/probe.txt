@@ -1,0 +1,4 @@
+bm25     p50=   0.013 ms  p95=   0.016 ms  peak_rss=   32.7 MB  (index: dense tf matrix, this implementation)
+dense    p50=   3.073 ms  p95=   3.539 ms  peak_rss=  290.2 MB  (query encode included)
+hybrid   p50=   3.104 ms  p95=   3.822 ms  peak_rss=  289.9 MB  (query encode included)
+ingest   132 chunks in 2279 ms = 57.9 chunks/s, 28.6 kchar/s, emb 0.20 MB, peak_rss=297.0 MB

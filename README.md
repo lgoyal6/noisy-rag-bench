@@ -3,6 +3,46 @@
 A degradation curve for on-prem RAG under realistic document noise, plus a KV-cache
 compression table. CPU only, NumPy only, no PyTorch, no network at run time.
 
+---
+
+## The short version
+
+**What I noticed.** Retrieval benchmarks run on clean text. Documents inside a bank or a law
+firm are scans: OCR confusions, running headers, Bates stamps, hyphens across line breaks,
+redacted spans. Nobody publishes what that does to a RAG pipeline, and it is the normal input
+for anyone deploying on-premise.
+
+**What I found, and it is the reason this repo exists.** Retrieval and answer quality come
+apart under noise, and the gap is invisible to the metric most systems are evaluated on:
+
+| condition | recall@5 | answer recoverable | after an 11-line fix |
+|---|---:|---:|---:|
+| clean | 0.98 | 1.00 | 1.00 |
+| OCR at 5% character error | **0.98** | **0.51** | 0.83 |
+| scan-degraded | 0.84 | 0.38 | 0.65 |
+
+**At 5% OCR error, recall@5 is 0.98, exactly what it was on clean documents, while half the
+answers have become unrecoverable.** A dashboard tracking retrieval quality reports that
+system as perfectly healthy. Retrieval still finds the right page; the figure on that page is
+no longer legible. **An 11-line canonicalizer recovers 0.51 to 0.83**, which is more accuracy
+than switching retrievers buys.
+
+**A second result worth knowing.** Character error rate is a poor predictor of damage. Page
+header contamination produces a much *higher* error rate than the 5% OCR case and costs
+nothing at all on either metric. What kind of noise it is matters far more than how much.
+
+**Both losing axes, published.** A canonicalized BM25 baseline beats my own hybrid retriever
+at **14 of 18 conditions using about a ninth of the memory**. And the KV-cache half is a
+negative result: fp16 is free, but int4 costs **11.08% perplexity, flips 16% of greedy
+decisions, and makes decoding 2.2x slower** rather than faster.
+
+**Why it matters on-prem.** The whole stack runs in **261 MB at 3.1 ms p50**, which is the
+number that decides whether it fits on hardware someone already bought.
+
+**What it is not.** The corpus is generated, not real client documents, which is what makes
+it shareable. It measures whether a pipeline survives noise, not whether any particular
+vendor's does.
+
 ## Why
 
 Retrieval benchmarks are run on clean text. Documents inside a bank or a law firm are
@@ -78,8 +118,6 @@ or keep the ladder to see how much further headroom there is.
 
 ## Findings
 
-See `../RESULTS.md`. The short version: retrieval recall is far more noise-tolerant than
-answer accuracy, so a recall-only eval will call a broken configuration healthy; an 11-line
-OCR normalizer buys back more accuracy than changing retrievers does; character error rate
-is a poor predictor of which noise actually hurts; and fp16 KV cache is free while int4
-costs 11% perplexity and changes 16% of greedy decisions.
+Summarised at the top of this file. The full per-condition tables, all 18 noise conditions
+across four retrievers, live in `results/noise_bench.md` and `results/noise_bench.json`, and
+the KV-cache table in `results/kv_bench.json`. Both regenerate from the commands above.

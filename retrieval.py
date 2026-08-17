@@ -79,8 +79,17 @@ class Dense:
 
 
 def rrf(rank_lists, k=60):
-    """Reciprocal rank fusion. rank_lists: list of arrays of doc ids, best first."""
-    n = max(len(r) for r in rank_lists)
+    """Reciprocal rank fusion. rank_lists: list of arrays of doc ids, best first.
+
+    Returns a score array indexed by doc id, so it is sized by the largest id
+    present rather than by how many ids were passed. Sizing it by list length
+    only works while every caller happens to pass a full, zero-based, contiguous
+    ranking, which is true of this harness and is not what the signature says.
+    """
+    if not rank_lists:
+        return np.zeros(0, dtype=np.float32)
+
+    n = int(max(int(r.max()) for r in rank_lists if len(r))) + 1
     s = np.zeros(n, dtype=np.float32)
     for r in rank_lists:
         s[r] += 1.0 / (k + 1.0 + np.arange(len(r)))

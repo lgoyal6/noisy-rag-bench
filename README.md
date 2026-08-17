@@ -100,6 +100,7 @@ uv pip install --python ../work/.venv/bin/python numpy safetensors tokenizers ps
 ../work/.venv/bin/python -c "from huggingface_hub import hf_hub_download as d; [d('openai-community/gpt2', f) for f in ['config.json','tokenizer.json','model.safetensors']]"
 
 ../work/.venv/bin/python run_noise_bench.py                         # ~68 s
+../work/.venv/bin/python -m pytest tests -q                          # 46 tests, no model needed
 ../work/.venv/bin/python run_kv_bench.py --prefill 768 --decode 64  # ~8 s
 for m in bm25 dense hybrid ingest; do ../work/.venv/bin/python probe.py $m; done
 ```

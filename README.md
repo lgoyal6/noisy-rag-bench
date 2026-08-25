@@ -54,6 +54,27 @@ and what does that cost in RAM and milliseconds on a fixed box."
 The corpus and the questions are generated here, so this is shareable. No client data,
 nothing scraped, nothing under licence.
 
+## The shape of a run
+
+Queries stay clean and only the corpus is damaged, because the lawyer types the
+question correctly; it is the archive that has been scanned, stamped and redacted.
+
+```mermaid
+flowchart LR
+  CORPUS["corpus.py<br/>near-duplicate boilerplate<br/>plus gold QA pairs"] --> NOISE["noise.py<br/>ocr, whitespace, hyphenation,<br/>header, redaction"]
+  NOISE --> CHUNKS[("damaged chunks")]
+  Q(["clean query"]) --> R1 & R2 & R3 & R4
+  CHUNKS --> R1["bm25"]
+  CHUNKS --> R2["bm25-canon<br/>OCR-canonicalized index"]
+  CHUNKS --> R3["dense<br/>MiniLM in NumPy"]
+  R2 & R3 --> R4["hybrid<br/>reciprocal rank fusion"]
+  R1 & R2 & R3 & R4 --> M["recall@5, MRR@10<br/>ans_exact@5, ans_canon@5<br/>p50/p95 latency, index size"]
+  M --> OUT[("results/noise_bench.json + .md")]
+```
+
+`ans_exact@5` versus `recall@5` is the pair worth watching: retrieval can still
+find the right passage while the answer inside it has been destroyed by the noise.
+
 ## What it measures
 
 Five noise families, at three to four severities each, plus two combined "scan" profiles:

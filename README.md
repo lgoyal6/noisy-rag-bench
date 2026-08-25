@@ -115,15 +115,15 @@ probe.py           honest per-retriever latency and peak RSS, one process each
 ## Run
 
 ```bash
-uv venv --python 3.12 ../work/.venv
-uv pip install --python ../work/.venv/bin/python numpy safetensors tokenizers psutil huggingface_hub
-../work/.venv/bin/python -c "from huggingface_hub import snapshot_download as d; d('sentence-transformers/all-MiniLM-L6-v2')"
-../work/.venv/bin/python -c "from huggingface_hub import hf_hub_download as d; [d('openai-community/gpt2', f) for f in ['config.json','tokenizer.json','model.safetensors']]"
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python numpy safetensors tokenizers psutil huggingface_hub pytest
+.venv/bin/python -c "from huggingface_hub import snapshot_download as d; d('sentence-transformers/all-MiniLM-L6-v2')"
+.venv/bin/python -c "from huggingface_hub import hf_hub_download as d; [d('openai-community/gpt2', f) for f in ['config.json','tokenizer.json','model.safetensors']]"
 
-../work/.venv/bin/python run_noise_bench.py                         # ~68 s
-../work/.venv/bin/python -m pytest tests -q                          # 46 tests, no model needed
-../work/.venv/bin/python run_kv_bench.py --prefill 768 --decode 64  # ~8 s
-for m in bm25 dense hybrid ingest; do ../work/.venv/bin/python probe.py $m; done
+.venv/bin/python run_noise_bench.py                         # ~68 s
+.venv/bin/python -m pytest tests -q                         # 46 tests, no model needed
+.venv/bin/python run_kv_bench.py --prefill 768 --decode 64  # ~8 s
+for m in bm25 dense hybrid ingest; do .venv/bin/python probe.py $m; done
 ```
 
 `run_noise_bench.py --quick` runs clean and scan-degraded only, as a smoke test.

@@ -37,7 +37,8 @@ function series() {
 function draw(points, active) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w0 = plot.clientWidth || 1200;
-  const h0 = Math.round(w0 * 0.38);
+  // Capped: past a point a wider screen only adds empty plot, not resolution.
+  const h0 = Math.min(Math.round(w0 * 0.38), 430);
   plot.width = Math.round(w0 * dpr);
   plot.height = Math.round(h0 * dpr);
   plot.style.height = h0 + 'px';

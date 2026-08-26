@@ -1,0 +1,67 @@
+{
+ "meta": {
+  "model": "openai-community/gpt2 (124M) pure NumPy forward pass, fp32 weights",
+  "prefill_tokens": 768,
+  "decode_tokens": 64,
+  "quant": "asymmetric min/max, per (layer, head, token) over 64 head dims; int4 bit-packed two nibbles per byte",
+  "scale_overhead": "2 fp32 values per (layer, head, token) per K and V, counted in kv_cache_mb",
+  "note": "Weights are fp32 throughout. Only the cache is compressed. Perplexity is teacher-forced on the same token sequence for every bit-width, so the numbers are directly comparable.",
+  "numpy": "2.5.2",
+  "python": "3.12.14",
+  "platform": "darwin"
+ },
+ "rows": [
+  {
+   "kv_bits": 32,
+   "kv_cache_mb": 61.34,
+   "kv_bytes_per_token": 73728.0,
+   "mem_vs_fp32": 1.0,
+   "prefill_ms": 671.1,
+   "decode_p50_ms": 12.64,
+   "decode_p95_ms": 15.62,
+   "perplexity": 181.2878,
+   "ppl_delta_pct": 0.0,
+   "top1_agree_vs_fp32": 1.0,
+   "peak_rss_mb": 983.7
+  },
+  {
+   "kv_bits": 16,
+   "kv_cache_mb": 30.67,
+   "kv_bytes_per_token": 36864.0,
+   "mem_vs_fp32": 0.5,
+   "prefill_ms": 553.9,
+   "decode_p50_ms": 11.19,
+   "decode_p95_ms": 12.31,
+   "perplexity": 181.2762,
+   "ppl_delta_pct": -0.006,
+   "top1_agree_vs_fp32": 1.0,
+   "peak_rss_mb": 1144.6
+  },
+  {
+   "kv_bits": 8,
+   "kv_cache_mb": 17.25,
+   "kv_bytes_per_token": 20736.0,
+   "mem_vs_fp32": 0.281,
+   "prefill_ms": 596.9,
+   "decode_p50_ms": 21.23,
+   "decode_p95_ms": 25.25,
+   "perplexity": 181.5127,
+   "ppl_delta_pct": 0.124,
+   "top1_agree_vs_fp32": 0.9844,
+   "peak_rss_mb": 1146.0
+  },
+  {
+   "kv_bits": 4,
+   "kv_cache_mb": 9.58,
+   "kv_bytes_per_token": 11520.0,
+   "mem_vs_fp32": 0.156,
+   "prefill_ms": 600.0,
+   "decode_p50_ms": 27.46,
+   "decode_p95_ms": 30.18,
+   "perplexity": 201.3713,
+   "ppl_delta_pct": 11.078,
+   "top1_agree_vs_fp32": 0.8438,
+   "peak_rss_mb": 1146.0
+  }
+ ]
+}

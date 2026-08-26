@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>noisy-rag-bench - the metric that stays healthy while the answers go</title>
+<meta name="description" content="At 5% OCR error, retrieval recall is exactly what it was on clean documents while half the answers have become unrecoverable. Drag the noise and watch them come apart.">
+<meta property="og:title" content="noisy-rag-bench">
+<meta property="og:description" content="Retrieval recall holds at 0.98 while answer accuracy halves. The dashboard reports a healthy system.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="gut">
+  <div>
+    <div class="eyebrow">lgoyal6 / noisy-rag-bench</div>
+    <h1>noisy&#8209;rag&#8209;bench<span class="dot">.</span></h1>
+    <p class="thesis">
+      Retrieval benchmarks run on clean text. Documents inside a bank or a law firm
+      are scans: OCR confusions, running headers, hyphens across line breaks,
+      redacted spans. Nobody publishes what that does to a RAG pipeline, and it is
+      the normal input for anyone deploying on premise.
+    </p>
+    <p class="thesis">
+      <strong>Retrieval quality and answer quality come apart under noise</strong>, and
+      the gap is invisible to the metric most systems are watched on. Drag the noise
+      below and watch the two separate.
+    </p>
+  </div>
+  <dl class="facts">
+    <div class="fact"><dt>recall at 5% OCR</dt><dd>0.98 <small>unchanged</small></dd></div>
+    <div class="fact"><dt>answers recovered</dt><dd>0.51 <small>from 1.00</small></dd></div>
+    <div class="fact"><dt>after an 11-line fix</dt><dd>0.83 <small>no new model</small></dd></div>
+    <div class="fact"><dt>whole stack</dt><dd>261 MB <small>3.1 ms p50, CPU only</small></dd></div>
+  </dl>
+</header>
+
+<section class="gut">
+  <div class="eyebrow">Figure 1</div>
+  <h2>The dashboard says the system is fine</h2>
+  <p class="lead">
+    Each step adds document noise of one kind. The solid line is what a retrieval
+    dashboard shows you. The dashed line is whether the answer was still in there.
+  </p>
+
+  <div class="figure">
+    <div class="figcap">
+      <span id="cap-what">132 questions over 132 chunks</span>
+      <span id="cap-where">MiniLM in pure NumPy, no PyTorch, no network</span>
+    </div>
+
+    <div class="toolbar">
+      <span class="picklabel">Noise</span>
+      <div class="pick" id="family" role="group" aria-label="Noise family"></div>
+      <span class="picklabel">Retriever</span>
+      <div class="pick" id="retriever" role="group" aria-label="Retriever"></div>
+      <div class="scrub">
+        <span class="picklabel">Amount</span>
+        <input type="range" id="scrub" min="0" max="1" value="0" step="1">
+      </div>
+    </div>
+
+    <canvas class="plot" id="plot" width="1200" height="480"></canvas>
+
+    <dl class="readout">
+      <div><dt>condition</dt><dd id="r-cond">-</dd></div>
+      <div><dt>character error</dt><dd id="r-cer">-</dd></div>
+      <div><dt>recall@5</dt><dd id="r-recall">-</dd></div>
+      <div><dt>answer recovered</dt><dd id="r-exact">-</dd></div>
+      <div><dt>after canonicalizing</dt><dd id="r-canon">-</dd></div>
+    </dl>
+
+    <div class="banner" id="banner">Loading the measurements.</div>
+  </div>
+
+  <h3>What the chart is showing</h3>
+  <p>
+    <strong>recall@5</strong> asks whether the right chunk came back at all. It is the
+    number a retrieval dashboard plots, and under OCR noise it barely moves.
+    <strong>Answer recovered</strong> asks whether the string that answers the question
+    is still legible inside that chunk. At five percent character error, retrieval is
+    exactly as good as it was on clean text and half the answers are gone.
+  </p>
+  <p>
+    The two lines are solid and dashed rather than only two colours, so the separation
+    survives being printed, screenshotted, or read by someone who does not see colour.
+  </p>
+</section>
+
+<section class="gut">
+  <div class="eyebrow">Figure 2</div>
+  <h2>How much noise matters less than which kind</h2>
+  <p class="lead">
+    Character error rate is a poor predictor of damage. Sorted by how badly each
+    condition hurt the answer, not by how noisy it looks.
+  </p>
+  <div id="table-wrap"></div>
+  <p>
+    Page header contamination produces a <strong>higher</strong> character error rate
+    than the five percent OCR case and costs nothing on either metric, because the
+    added text is uniform and the answer span is untouched. A cleaning budget spent on
+    the noisiest-looking documents would be spent in the wrong place.
+  </p>
+</section>
+
+<section class="gut">
+  <div class="eyebrow">Figure 3</div>
+  <h2>Where it loses</h2>
+  <p class="lead">
+    Both losing axes, published, because a benchmark that only reports where its author
+    wins is an advertisement.
+  </p>
+  <ul class="map">
+    <li>
+      <b>A canonicalized BM25 baseline beats my own hybrid retriever</b> at 14 of 18
+      conditions, using about a ninth of the memory. The clever retriever is not the
+      thing that helps.
+      <span class="where">results/noise_bench.json</span>
+    </li>
+    <li>
+      <b>The KV-cache half is a negative result.</b> fp16 is free, but int4 costs 11.08%
+      perplexity, flips 16% of greedy decisions, and makes decoding 2.2x slower rather
+      than faster.
+      <span class="where">results/kv_bench.json</span>
+    </li>
+    <li>
+      <b>132 questions is small.</b> Enough to separate a 0.98 from a 0.51, not enough
+      to rank two retrievers that land a point apart.
+      <span class="where">corpus.py</span>
+    </li>
+    <li>
+      <b>The noise is synthetic.</b> Generated confusion matrices rather than a scanner,
+      chosen so anyone can reproduce it without a corpus they cannot share.
+      <span class="where">noise.py</span>
+    </li>
+  </ul>
+</section>
+
+<footer class="gut">
+  <span>
+    <a href="https://github.com/lgoyal6/noisy-rag-bench">github.com/lgoyal6/noisy-rag-bench</a>
+    &middot; MIT
+  </span>
+  <span>
+    also: <a href="https://lgoyal6.github.io/strata/">strata</a>
+    &middot; <a href="https://lgoyal6.github.io/tollgate/">tollgate</a>
+    &middot; <a href="https://lgoyal6.github.io/tickvault/">tickvault</a>
+  </span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

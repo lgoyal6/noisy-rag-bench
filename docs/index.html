@@ -73,18 +73,27 @@
     <div class="banner" id="banner">Loading the measurements.</div>
   </div>
 
-  <h3>What the chart is showing</h3>
-  <p>
-    <strong>recall@5</strong> asks whether the right chunk came back at all. It is the
-    number a retrieval dashboard plots, and under OCR noise it barely moves.
-    <strong>Answer recovered</strong> asks whether the string that answers the question
-    is still legible inside that chunk. At five percent character error, retrieval is
-    exactly as good as it was on clean text and half the answers are gone.
-  </p>
-  <p>
-    The two lines are solid and dashed rather than only two colours, so the separation
-    survives being printed, screenshotted, or read by someone who does not see colour.
-  </p>
+  <div class="split">
+    <div>
+      <h3>What the two lines mean</h3>
+      <p>
+        <strong>recall@5</strong> asks whether the right chunk came back at all. It is
+        the number a retrieval dashboard plots, and under OCR noise it barely moves.
+        <strong>Answer recovered</strong> asks whether the string that answers the
+        question is still legible inside that chunk.
+      </p>
+      <p>
+        Solid and dashed rather than two colours, so the separation survives being
+        printed or read by someone who does not see colour.
+      </p>
+    </div>
+    <dl class="takeaway">
+      <dt>if you watch one metric</dt>
+      <dd>Watch the wrong one and you see nothing.<small>Recall 0.98 while answers hit 0.51.</small></dd>
+      <dt>the cheap fix</dt>
+      <dd>Canonicalize before indexing.<small>0.51 to 0.83, eleven lines, no new model.</small></dd>
+    </dl>
+  </div>
 </section>
 
 <section class="gut">
@@ -95,12 +104,25 @@
     condition hurt the answer, not by how noisy it looks.
   </p>
   <div id="table-wrap"></div>
-  <p>
-    Page header contamination produces a <strong>higher</strong> character error rate
-    than the five percent OCR case and costs nothing on either metric, because the
-    added text is uniform and the answer span is untouched. A cleaning budget spent on
-    the noisiest-looking documents would be spent in the wrong place.
-  </p>
+  <div class="split">
+    <div>
+      <p>
+        Page header contamination produces a <strong>higher</strong> character error
+        rate than the five percent OCR case and costs nothing on either metric,
+        because the added text is uniform and the answer span is untouched.
+      </p>
+      <p>
+        So a cleaning budget aimed at the noisiest-looking documents is aimed in the
+        wrong place.
+      </p>
+    </div>
+    <dl class="takeaway">
+      <dt>worst for answers</dt>
+      <dd>scan-degraded<small>0.38 recovered, 36.9% character error.</small></dd>
+      <dt>free, despite looking worse</dt>
+      <dd>header contamination<small>1.00 recovered, 25.9% character error.</small></dd>
+    </dl>
+  </div>
 </section>
 
 <section class="gut">
@@ -112,9 +134,9 @@
   </p>
   <ul class="map">
     <li>
-      <b>A canonicalized BM25 baseline beats my own hybrid retriever</b> at 14 of 18
-      conditions, using about a ninth of the memory. The clever retriever is not the
-      thing that helps.
+      <b>A canonicalized BM25 baseline beats my own hybrid retriever.</b>
+      At 14 of 18 conditions, using about a ninth of the memory. The clever retriever
+      is not the thing that helps.
       <span class="where">results/noise_bench.json</span>
     </li>
     <li>
@@ -124,13 +146,15 @@
       <span class="where">results/kv_bench.json</span>
     </li>
     <li>
-      <b>132 questions is small.</b> Enough to separate a 0.98 from a 0.51, not enough
-      to rank two retrievers that land a point apart.
+      <b>132 questions is small.</b>
+      Enough to separate a 0.98 from a 0.51, not enough to rank two retrievers that
+      land a point apart.
       <span class="where">corpus.py</span>
     </li>
     <li>
-      <b>The noise is synthetic.</b> Generated confusion matrices rather than a scanner,
-      chosen so anyone can reproduce it without a corpus they cannot share.
+      <b>The noise is synthetic.</b>
+      Generated confusion matrices rather than a scanner, chosen so anyone can
+      reproduce it without a corpus they cannot share.
       <span class="where">noise.py</span>
     </li>
   </ul>

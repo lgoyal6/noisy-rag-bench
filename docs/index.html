@@ -20,6 +20,7 @@
 </nav>
 <nav class="tabs" aria-label="Sections">
     <a href="#sec-home">Home</a>
+    <a href="#sec-try">Try it</a>
     <a href="#sec-gap">The gap</a>
     <a href="#sec-conditions">Conditions</a>
     <a href="#sec-limits">Limits</a>
@@ -48,6 +49,72 @@
     <div class="fact"><dt>whole stack</dt><dd>261 MB <small>3.1 ms p50, CPU only</small></dd></div>
   </dl>
 </header>
+
+<section id="sec-try" class="gut">
+  <div class="eyebrow">Try it</div>
+  <h2>Wreck a document and look for the answer in it</h2>
+  <p class="lead">
+    Put a passage in the box and pick what kind of scan it came off. The benchmark's own
+    noise functions run in your tab and do the damage. Then say what answer you would be
+    looking for, and see whether it survived.
+  </p>
+
+  <div class="figure">
+    <div class="figcap">
+      <span id="noise-engine">starting the engine</span>
+      <span id="noise-note">noise.py and retrieval.py, unmodified</span>
+    </div>
+    <div class="toolbar">
+      <span class="picklabel">Noise</span>
+      <div class="pick" id="noise-fam" role="group" aria-label="Noise family"></div>
+      <div class="scrub">
+        <span class="picklabel">Amount <b id="noise-rate-val">20%</b></span>
+        <input type="range" id="noise-rate" min="0" max="50" value="20" step="1" aria-label="noise rate">
+      </div>
+    </div>
+
+    <div class="noise-io">
+      <label>The document<textarea id="n-clean" rows="7" spellcheck="false"></textarea></label>
+      <label>What the pipeline indexes<div class="out" id="n-dirty"></div></label>
+    </div>
+    <div class="answer-row">
+      <label>The answer you are looking for<input id="n-answer" spellcheck="false"></label>
+    </div>
+
+    <dl class="readout">
+      <div><dt>character error rate</dt><dd id="n-cer">&ndash;</dd></div>
+      <div><dt>answer in the clean text</dt><dd id="n-clean-hit">&ndash;</dd></div>
+      <div><dt>answer after the noise</dt><dd id="n-dirty-hit">&ndash;</dd></div>
+      <div><dt>after canonicalizing</dt><dd id="n-canon-hit">&ndash;</dd></div>
+    </dl>
+    <div class="banner" id="noise-banner">Type something, or leave the passage as it is.</div>
+  </div>
+
+  <div class="split">
+    <div>
+      <h3>The thing to notice</h3>
+      <p>
+        It opens on OCR at 20%, which reads as a <strong>5% character error rate</strong> and
+        has taken the answer away. Now switch to running headers and push it to 50%: the same
+        <strong>5% character error rate</strong>, and the answer is untouched. Two documents a
+        cleaning budget would rank identically, and only one of them is broken.
+      </p>
+      <p>
+        Then watch the last column. Canonicalizing before indexing puts most of it back,
+        which is eleven lines and no new model, and it is the entire recommendation of this
+        repository.
+      </p>
+    </div>
+    <dl class="takeaway">
+      <dt>looks small</dt>
+      <dd>The character error rate.<small>Header noise scores 25.9% and costs nothing.</small></dd>
+      <dt>is fatal</dt>
+      <dd>Damage inside the answer span.<small>OCR at 5% halves what is recoverable.</small></dd>
+      <dt>is cheap to fix</dt>
+      <dd>Canonicalize before indexing.<small>The last column, eleven lines.</small></dd>
+    </dl>
+  </div>
+</section>
 
 <section class="gut" id="sec-gap">
   <div class="eyebrow">Figure 1</div>
@@ -186,7 +253,9 @@
   </span>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 <script src="app.js"></script>
+<script src="wreck.js"></script>
 <script src="nav.js"></script>
 </body>
 </html>

@@ -172,3 +172,29 @@ html { scroll-padding-top: 96px; }
   html { scroll-behavior: auto; }
   .tabs a, .navlinks a { transition: none; }
 }
+
+/* The document and what the pipeline actually sees, side by side. */
+.noise-io { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0;
+  border-top: 1px solid var(--hair); }
+.noise-io label { display: block; padding: 12px 14px; font: 11px/1.6 var(--mono);
+  letter-spacing: .09em; text-transform: uppercase; color: var(--faint); }
+.noise-io label:first-child { border-right: 1px solid var(--hair); }
+.noise-io textarea, .noise-io .out {
+  display: block; width: 100%; margin-top: 6px; min-height: 150px;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--hair);
+  padding: 10px 11px; font: 13px/1.65 var(--mono); text-transform: none; letter-spacing: 0;
+  white-space: pre-wrap; overflow-wrap: anywhere; resize: vertical;
+}
+.noise-io .out { overflow-y: auto; max-height: 260px; }
+.noise-io textarea:focus { outline: 2px solid var(--ox); outline-offset: -2px; }
+.answer-row { padding: 12px 14px; border-top: 1px solid var(--hair); }
+.answer-row label { display: block; font: 11px/1.6 var(--mono); letter-spacing: .09em;
+  text-transform: uppercase; color: var(--faint); }
+.answer-row input { display: block; width: 100%; margin-top: 6px; background: var(--paper);
+  color: var(--ink); border: 1px solid var(--hair); padding: 10px 11px;
+  font: 15px/1.4 var(--serif); text-transform: none; letter-spacing: 0; }
+.answer-row input:focus { outline: 2px solid var(--ox); outline-offset: -2px; }
+.readout dd.yes { color: var(--ok); }
+.readout dd.no { color: var(--bad); }
+@media (max-width: 760px) { .noise-io { grid-template-columns: minmax(0,1fr); }
+  .noise-io label:first-child { border-right: 0; border-bottom: 1px solid var(--hair); } }

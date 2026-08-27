@@ -66,7 +66,7 @@ function draw(points, active) {
     const y = Y(v);
     ctx.fillText(v.toFixed(2), pad.l - 8, y + 3);
     if (v > 0) {
-      ctx.strokeStyle = '#e8e3d6';
+      ctx.strokeStyle = css('--grid');
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + w, y); ctx.stroke();
     }
   }

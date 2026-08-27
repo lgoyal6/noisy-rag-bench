@@ -1,3 +1,9 @@
+<a href="https://lgoyal6.github.io/noisy-rag-bench/">
+  <img alt="noisy-rag-bench - open the live demo" src="docs/og.png">
+</a>
+
+**[Open the live demo](https://lgoyal6.github.io/noisy-rag-bench/)** - Drag the OCR noise on real scanned pages and watch retrieval recall hold steady while the answers underneath it quietly stop being recoverable.
+
 # noisy-rag-bench
 
 A degradation curve for on-prem RAG under realistic document noise, plus a KV-cache

@@ -199,3 +199,8 @@ html { scroll-padding-top: 96px; }
 .readout dd.no { color: var(--bad); }
 @media (max-width: 760px) { .noise-io { grid-template-columns: minmax(0,1fr); }
   .noise-io label:first-child { border-right: 0; border-bottom: 1px solid var(--hair); } }
+
+/* Brand marks in the nav, sized to the text and inheriting its colour. */
+.navlinks a { display: inline-flex; align-items: center; gap: 7px; }
+.navlinks svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.brand { letter-spacing: .005em; }

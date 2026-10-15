@@ -14,6 +14,7 @@ import time
 import numpy as np
 
 from corpus import build_corpus
+from heldout_eval import evaluate_pages
 from minilm import MiniLM
 from noise import CONDITIONS, char_error_rate, corrupt_chunks
 from retrieval import BM25, Dense, canon, eval_run, rrf
@@ -43,9 +44,11 @@ def rank_all(score_fn, queries, n):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--output-dir", default=OUT, help="result directory; use private run state for experiments")
     args = ap.parse_args()
 
-    os.makedirs(OUT, exist_ok=True)
+    out_dir = os.path.abspath(args.output_dir)
+    os.makedirs(out_dir, exist_ok=True)
     clean_chunks, questions = build_corpus()
     qtexts = [q["question"] for q in questions]
     n = len(clean_chunks)
@@ -115,8 +118,16 @@ def main():
         for name in RETRIEVERS:
             ranks, lat = runs[name]
             m = eval_run(ranks, questions, texts)
+            pages = evaluate_pages(ranks, questions, [{**chunk, "text": text} for chunk, text in zip(clean_chunks, texts)])
             rows.append(dict(
                 condition=label, retriever=name, cer=round(cer, 4),
+                page_grounded_recoverability_at_5=pages["grounded_answer_recoverability"],
+                strict_any_page_recoverability_at_5=pages["answer_recoverability"],
+                wrong_location_only_support=pages["wrong_location_only_support"],
+                source_location_count=pages["n_source_locations"],
+                ranked_chunk_ids_at_10=ranks[:, :10].tolist(),
+                per_query_latency_ms=lat,
+                corruption_spec=spec, corruption_seed=7,
                 recall_at_5=round(m["recall_at_5"], 4),
                 mrr_at_10=round(m["mrr_at_10"], 4),
                 ans_exact_at_5=round(m["ans_exact_at_5"], 4),
@@ -141,10 +152,10 @@ def main():
         encode_batch_size=8,
         numpy=np.__version__, python=sys.version.split()[0],
         platform=sys.platform,
-        note="Queries are clean; only the indexed corpus is corrupted.",
+        note="Queries are clean; only the indexed corpus is corrupted. Page-grounded recoverability uses exact labelled doc/page or generated section, separately from legacy exact/canonical metrics. Generated sections are not independently adjudicated page labels.",
     )
-    with open(os.path.join(OUT, "noise_bench.json"), "w") as f:
-        json.dump(dict(meta=meta, rows=rows), f, indent=1)
+    with open(os.path.join(out_dir, "noise_bench.json"), "w") as f:
+        json.dump(dict(meta=meta, rows=rows, inputs={"clean_chunks":clean_chunks,"questions":questions}), f, indent=1)
 
     hdr = ("| condition | CER | retriever | R@5 | MRR@10 | ans exact@5 | ans canon@5 "
            "| p50 ms | p95 ms | index MB |")
@@ -155,12 +166,12 @@ def main():
             f"{r['recall_at_5']:.3f} | {r['mrr_at_10']:.3f} | "
             f"{r['ans_exact_at_5']:.3f} | {r['ans_canon_at_5']:.3f} | "
             f"{r['p50_query_ms']:.2f} | {r['p95_query_ms']:.2f} | {r['index_mb']:.2f} |")
-    with open(os.path.join(OUT, "noise_bench.md"), "w") as f:
+    with open(os.path.join(out_dir, "noise_bench.md"), "w") as f:
         f.write("\n".join(lines) + "\n\n```json\n" + json.dumps(meta, indent=1) + "\n```\n")
 
     print(f"\npeak RSS total: {peak_rss_mb():.1f} MB "
           f"(after model load: {rss_after_model:.1f} MB)")
-    print(f"wrote {OUT}/noise_bench.json and .md")
+    print(f"wrote {out_dir}/noise_bench.json and .md")
 
 
 if __name__ == "__main__":

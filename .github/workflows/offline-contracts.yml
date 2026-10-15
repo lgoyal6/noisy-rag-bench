@@ -1,0 +1,13 @@
+name: Offline contracts
+on: [push, pull_request]
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pytest==9.1.1 -r requirements-vector-adapters.txt
+      - run: |
+          python -m pytest -q tests/test_page_answerability.py tests/test_vector_adapters.py

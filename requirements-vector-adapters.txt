@@ -1,0 +1,4 @@
+# Optional local vector-index comparisons; pin exact provider API surfaces.
+# Chroma: Apache-2.0. LanceDB: Apache-2.0.
+chromadb==1.5.9
+lancedb==0.30.0

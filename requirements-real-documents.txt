@@ -1,0 +1,8 @@
+# Optional CORD real-document evaluation. Tesseract is an external executable.
+numpy==2.5.4
+pyarrow==26.0.0
+Pillow==13.0.0
+scipy==1.18.1
+# Needed only for --dense (the existing pure-NumPy MiniLM).
+tokenizers==0.23.3
+safetensors==0.8.0

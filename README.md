@@ -6,8 +6,14 @@
 
 # noisy-rag-bench
 
+[Real-document evaluation](docs/real-documents.md) runs actual OCR on the released
+CORD test receipts with publisher-provided answer/location labels. It complements
+the generated noise study; its selected-receipt, spatial-band scope is explicit.
+
 A degradation curve for on-prem RAG under realistic document noise, plus a KV-cache
 compression table. CPU only, NumPy only, no PyTorch, no network at run time.
+
+For the conservative field-assignment baseline, see [receipt evidence review](docs/receipt-review.md).
 
 ---
 

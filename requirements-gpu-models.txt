@@ -1,0 +1,13 @@
+# Install in a CUDA 12.1 compatible Linux environment with the matching
+# PyTorch CUDA wheel from pytorch.org; this file does not install a GPU runtime.
+torch==2.5.1
+torchvision==0.20.1
+transformers==4.52.4
+peft==0.15.2
+accelerate==1.7.0
+pyarrow==26.0.0
+Pillow==13.0.0
+scipy==1.18.1
+safetensors==0.8.0
+qwen-vl-utils==0.0.10
+onnx==1.18.0

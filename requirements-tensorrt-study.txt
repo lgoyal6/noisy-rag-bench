@@ -1,0 +1,2 @@
+# Optional supported NVIDIA export study, separate from model training pins.
+tensorrt-cu12==10.13.2.6
